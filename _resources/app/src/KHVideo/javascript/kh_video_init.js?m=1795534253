@@ -1,0 +1,50 @@
+jQuery(document).ready(function () {
+  var t = jQuery(window).width();
+
+  function r(e) {
+    e.find("video").trigger("play");
+  }
+
+  jQuery(".modal-video-link").each(function () {
+    var e = jQuery(this).attr("data-id");
+    var url = "PlayVideo/" + e + "/" + t;
+    var youTubeId = jQuery(this).attr("data-youtube-id");
+    if (youTubeId !== undefined) {
+      url += "?YouTubeID=" + youTubeId;
+    }
+
+    jQuery(this).attr("data-url", url);
+  }), jQuery(".video-player-modal").on("show.bs.modal", function (e) {
+
+    setTimeout(function () {
+      r(jQuery(this));
+    }.bind(jQuery(this)), 1000);
+
+    var target = jQuery(e.relatedTarget),
+      url = target.attr("data-url"),
+      title = target.attr("data-title"),
+      hideTitle = target.attr("data-hide-title");
+    jQuery(this).find(".modal-body").empty();
+    jQuery(this).find(".modal-body").load(url);
+
+    // if data-hide-title is declared
+    if (hideTitle !== undefined) {
+      // hide the modal title
+      jQuery(this).find(".modal-title").hide();
+    }
+    jQuery(this).find(".modal-title").text(title);
+
+
+    // TOOD: why is this timeout set twice?
+    setTimeout(function () {
+      r(jQuery(this));
+    }.bind(jQuery(this)), 1000);
+
+  }), jQuery(".video-player-modal").on("hide.bs.modal", function () {
+    var ibox = jQuery(".playerbox").find('iframe');
+    if (ibox.attr('src') !== undefined) {
+      ibox.attr('src', "");
+    }
+    jQuery(this).find("video").trigger("pause");
+  })
+});
